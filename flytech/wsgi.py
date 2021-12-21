@@ -4,7 +4,6 @@ IMPORTANT: This file changed to support 'whitenoise' for testing purposes
 from whitenoise import WhiteNoise
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
-import os
 
 
 application = get_wsgi_application()
