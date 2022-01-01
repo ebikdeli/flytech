@@ -33,11 +33,37 @@ class AirlineSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    airline = serializers.PrimaryKeyRelatedField(many=True, queryset=models.Airline.objects.all())
+    """
+    This serializer uses nested relations. Per rest_framework document to have a writeable nested serializer we should define
+    'create' or/and 'update' methods explicity for the serializer
+    """
+    # airline = serializers.PrimaryKeyRelatedField(many=False, queryset=models.Airline.objects.all())
+    airline = AirlineSerializer(many=False, read_only=True)
+    airline_write = serializers.PrimaryKeyRelatedField(queryset=models.Airline.objects.all(), many=False, write_only=True)
+    aircraft = AircraftSerializer(many=False, read_only=True)
 
     class Meta:
         model = models.Flight
         fields = '__all__'
+    
+
+    def create(self, validated_data):
+        airline_data = validated_data.pop('airline_write')
+        print(airline_data)
+        validated_data.update({'airline': airline_data})
+        f = models.Flight(**validated_data)
+        print(f, '  ', type(f), '   ', f.airline, '    ', f.airline.name, '   ', f.name)
+        Farda az inja shoroo mishavad
+        # flight = models.Flight.objects.create(**validated_data)
+        # return flight
+    """
+    def update(self, instance, validated_data):
+        airline_data = validated_data.pop('airline')
+        flight = models.Flight.objects.create(**validated_data)
+        for data in airline_data:
+            models.Airline.objects.create(flight=flight, **data)
+        return flight
+    """
 
 
 class TicketSerializer(serializers.ModelSerializer):

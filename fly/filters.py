@@ -3,6 +3,13 @@ from django_filters import rest_framework as filters
 from . import models
 
 
+class LocationFilter(filters.FilterSet):
+    """Filterset for Location model"""
+
+    class Meta:
+        model = models.Location
+        fields = '__all__'
+
 class TicketFilter(filters.FilterSet):
 
     class Meta:
