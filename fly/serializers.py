@@ -34,13 +34,14 @@ class AirlineSerializer(serializers.HyperlinkedModelSerializer):
 
 class FlightSerializer(serializers.ModelSerializer):
     """
-    This serializer uses nested relations. Per rest_framework document to have a writeable nested serializer we should define
-    'create' or/and 'update' methods explicity for the serializer
+    This serializer uses nested relations. To have good readable and writeable nested serializer field, We have defined another write_only
+    field named "<field_data>" to receive data for the respected field from the client.
     """
     # airline = serializers.PrimaryKeyRelatedField(many=False, queryset=models.Airline.objects.all())
     airline = AirlineSerializer(many=False, read_only=True)
-    airline_write = serializers.PrimaryKeyRelatedField(queryset=models.Airline.objects.all(), many=False, write_only=True)
+    airline_data = serializers.PrimaryKeyRelatedField(queryset=models.Airline.objects.all(), many=False, write_only=True)
     aircraft = AircraftSerializer(many=False, read_only=True)
+    aircraft_data = serializers.PrimaryKeyRelatedField(queryset=models.Aircraft.objects.all(), many=False, write_only=True)
 
     class Meta:
         model = models.Flight
@@ -48,22 +49,22 @@ class FlightSerializer(serializers.ModelSerializer):
     
 
     def create(self, validated_data):
-        airline_data = validated_data.pop('airline_write')
-        print(airline_data)
+        # 'validated_data' is a dictionary consists of the data sent from client to serializer
+        airline_data = validated_data.pop('airline_data')
         validated_data.update({'airline': airline_data})
+        aircraft_data = validated_data.pop('aircraft_data')
+        validated_data.update({'aircraft': aircraft_data})
         f = models.Flight(**validated_data)
-        print(f, '  ', type(f), '   ', f.airline, '    ', f.airline.name, '   ', f.name)
-        Farda az inja shoroo mishavad
-        # flight = models.Flight.objects.create(**validated_data)
-        # return flight
-    """
-    def update(self, instance, validated_data):
-        airline_data = validated_data.pop('airline')
         flight = models.Flight.objects.create(**validated_data)
-        for data in airline_data:
-            models.Airline.objects.create(flight=flight, **data)
         return flight
-    """
+
+    def update(self, instance, validated_data):
+        airline_data = validated_data.pop('airline_data')
+        aircraft_data = validated_data.pop('aircraft_data')
+        instance.airline = airline_data
+        instance.aircraft = aircraft_data
+        instance.save()
+        return instance
 
 
 class TicketSerializer(serializers.ModelSerializer):
