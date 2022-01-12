@@ -16,5 +16,7 @@ router.register('flight', views.FlightViewSet)
 router.register('ticket', views.TicketViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/get/', views.api_get, name='api_get'),
+    path('api/show/all', views.api_all, name='api_show_all'),
 ]

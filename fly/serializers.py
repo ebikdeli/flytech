@@ -33,11 +33,38 @@ class AirlineSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    airline = serializers.PrimaryKeyRelatedField(many=True, queryset=models.Airline.objects.all())
+    """
+    This serializer uses nested relations. To have good readable and writeable nested serializer field, We have defined another write_only
+    field named "<field_data>" to receive data for the respected field from the client.
+    """
+    # airline = serializers.PrimaryKeyRelatedField(many=False, queryset=models.Airline.objects.all())
+    airline = AirlineSerializer(many=False, read_only=True)
+    airline_data = serializers.PrimaryKeyRelatedField(queryset=models.Airline.objects.all(), many=False, write_only=True)
+    aircraft = AircraftSerializer(many=False, read_only=True)
+    aircraft_data = serializers.PrimaryKeyRelatedField(queryset=models.Aircraft.objects.all(), many=False, write_only=True)
 
     class Meta:
         model = models.Flight
         fields = '__all__'
+    
+
+    def create(self, validated_data):
+        # 'validated_data' is a dictionary consists of the data sent from client to serializer
+        airline_data = validated_data.pop('airline_data')
+        validated_data.update({'airline': airline_data})
+        aircraft_data = validated_data.pop('aircraft_data')
+        validated_data.update({'aircraft': aircraft_data})
+        f = models.Flight(**validated_data)
+        flight = models.Flight.objects.create(**validated_data)
+        return flight
+
+    def update(self, instance, validated_data):
+        airline_data = validated_data.pop('airline_data')
+        aircraft_data = validated_data.pop('aircraft_data')
+        instance.airline = airline_data
+        instance.aircraft = aircraft_data
+        instance.save()
+        return instance
 
 
 class TicketSerializer(serializers.ModelSerializer):
