@@ -1,27 +1,17 @@
 # This is for django-rest framework
-from django_filters import rest_framework as filters
+import django_filters as f
+from django_filters import rest_framework as filter
 from . import models
 
 
-class TicketFilter(filters.FilterSet):
+class FlightFilterSet(filter.FilterSet):
+    date = f.RangeFilter()
+    class Meta:
+        model = models.Flight
+        fields = '__all__'
+
+class TicketFilterSet(filter.FilterSet):
 
     class Meta:
         model = models.Ticket
         exclude = ['seat_number', 'total_price', 'sub']
-
-
-
-
-"""
-# This is for regular django view
-import django_filters
-from . import models
-
-
-class TicketFilter(django_filters.FilterSet):
-    # Filters for ticket model field
-
-    class Meta:
-        model = models.Ticket
-        exclude = ['seat_number', 'total_price', 'sub']
-"""

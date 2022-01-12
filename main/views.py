@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
 from .models import Dflight
 from fly.models import Ticket
-from fly.filters import TicketFilter
+from fly.filters import TicketFilterSet
 
 
 def index(request):
@@ -12,5 +12,5 @@ def index(request):
 
 
 def ticket_view(request):
-    tf = TicketFilter(request.GET, Ticket.objects.all())
+    tf = TicketFilterSet(request.GET, Ticket.objects.all())
     return render(request, 'index.html', {'filter': tf})
