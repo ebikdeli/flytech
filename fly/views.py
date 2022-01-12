@@ -5,21 +5,16 @@ override it with 'get_queryset' method.
 from django.shortcuts import render
 from django.db.models import Q
 from rest_framework import viewsets
-<<<<<<< HEAD
-=======
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
->>>>>>> f1bd08ca701840a1dd253a2ae0e5fface6131a5e
 from django_filters import rest_framework as filter
 
 from . import models
 from . import serializers
-<<<<<<< HEAD
 from .filters import TicketFilterSet, FlightFilterSet
-=======
 from . import filters
->>>>>>> f1bd08ca701840a1dd253a2ae0e5fface6131a5e
 
 
 class LocationViewSet(viewsets.ModelViewSet):
@@ -54,14 +49,10 @@ class TicketViewSet(viewsets.ModelViewSet):
     """Viewset for Ticket"""
     serializer_class = serializers.TicketSerializer
     queryset = models.Ticket.objects.all()
-<<<<<<< HEAD
     filterset_class = TicketFilterSet
     filter_backends = (filter.DjangoFilterBackend,)
-=======
     # filter_backends = (filter.DjangoFilterBackend)
     # filterset_class = filters.TicketFilter
-
->>>>>>> f1bd08ca701840a1dd253a2ae0e5fface6131a5e
 
     def get_queryset(self):
         """Override queryset method to filter client queries"""
